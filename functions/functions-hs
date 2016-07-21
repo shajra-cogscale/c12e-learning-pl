@@ -1,7 +1,30 @@
 #!/usr/bin/env stack
 -- stack --install-ghc runghc
 
+import Data.Char
 
-hello = "hello"
 
-main = putStrLn hello
+data MyBool = MyTrue | MyFalse deriving Show
+
+and MyTrue MyTrue = MyTrue
+and MyTrue MyFalse = MyFalse
+and MyFalse MyTrue = MyFalse
+and MyFalse MyFalse = MyFalse
+
+
+
+imperative :: IO ()
+imperative = do
+    putStrLn "Enter string imperatively:"
+    h <- getLine
+    let upperH = map toUpper h
+    putStrLn upperH
+
+
+pointFree :: IO ()
+pointFree = putStrLn "Enter string point-free:" *> (map toUpper <$> getLine) >>= putStrLn
+
+
+main :: IO ()
+main = 
+    a . b . c $ d
