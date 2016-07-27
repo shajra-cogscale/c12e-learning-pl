@@ -1,6 +1,56 @@
 #!/usr/bin/env python
 
 
-def hello(): return "hello"
+addLambda = lambda a: lambda b: a + b
 
-print(hello())
+print(addLambda(1)(2))
+
+def addLambdaHalf(a): return lambda b: a + b
+
+print(addLambdaHalf(1)(2))
+
+def add(a, b): return a + b
+
+print(add(1, 2))
+
+addCurried = lambda a, b: a + b
+
+print(addCurried(1, 2))
+
+addCurriedTupled = lambda t: t[0] + t[1]
+
+print(addCurriedTupled((1, 2)))
+
+addLambdaOne = addLambda(1)
+
+print(addLambdaOne(2))
+
+addLambdaHalfOne = addLambdaHalf(1)
+
+print(addLambdaHalfOne(2))
+
+def curry(f): return lambda a: lambda b: f(a, b)
+
+def sub(a, b): return a - b
+
+print(curry(sub)(5)(2))
+
+def uncurry(f): return lambda a, b: f(a)(b)
+
+print(uncurry(curry(sub))(5, 2))
+
+def flip(f): return lambda b: lambda a: f(a)(b)
+
+print(flip(curry(sub))(2)(5))
+
+curryLambda = lambda f: lambda a: lambda b: f(a, b)
+
+print(curryLambda(sub)(5)(2))
+
+uncurryLambda = lambda f: lambda a, b: f(a)(b)
+
+print(uncurryLambda(curryLambda(sub))(5, 2))
+
+flipLambda = lambda f: lambda b: lambda a: f(a)(b)
+
+print(flipLambda(curry(sub))(2)(5))

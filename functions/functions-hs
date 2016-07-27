@@ -1,30 +1,84 @@
 #!/usr/bin/env stack
 -- stack --install-ghc runghc
 
-import Data.Char
 
-
-data MyBool = MyTrue | MyFalse deriving Show
-
-and MyTrue MyTrue = MyTrue
-and MyTrue MyFalse = MyFalse
-and MyFalse MyTrue = MyFalse
-and MyFalse MyFalse = MyFalse
-
-
-
-imperative :: IO ()
-imperative = do
-    putStrLn "Enter string imperatively:"
-    h <- getLine
-    let upperH = map toUpper h
-    putStrLn upperH
-
-
-pointFree :: IO ()
-pointFree = putStrLn "Enter string point-free:" *> (map toUpper <$> getLine) >>= putStrLn
+{-# LANGUAGE NoImplicitPrelude #-}
+import Prelude hiding (curry, uncurry)
 
 
 main :: IO ()
-main = 
-    a . b . c $ d
+main = do
+
+    let addLambda :: Int -> Int -> Int
+        addLambda = (\a -> (\b -> a + b))
+
+    print $ addLambda 1 2
+
+    let addLambda' :: Int -> Int -> Int
+        addLambda' = \a -> \b -> a + b
+
+    print $ addLambda' 1 2
+
+    let addLambdaShort :: Int -> Int -> Int
+        addLambdaShort = \a b -> a + b
+
+    print $ addLambdaShort 1 2
+
+    let addLambdaHalf :: Int -> Int -> Int
+        addLambdaHalf a = \b -> a + b
+
+    print $ addLambdaHalf 1 2
+
+    let add :: Int -> Int -> Int
+        add a b = a + b
+
+    print $ add 1 2
+
+    let addUncurried :: (Int, Int) -> Int
+        addUncurried (a, b) = a + b
+
+    print $ addUncurried (1, 2)
+
+    let addUncurried' :: (Int, Int) -> Int
+        addUncurried' p = (fst p) + (snd p)
+
+    print $ addUncurried' (1, 2)
+
+    let addOne :: Int -> Int
+        addOne = add 1
+
+    print $ addOne 2
+
+    let addUncurriedOne :: Int -> Int
+        addUncurriedOne x = addUncurried (1, x)
+
+    print $ addUncurriedOne 2
+
+    let curry :: ((a, b) -> c) -> a -> b -> c
+        curry f a b = f (a, b)
+
+        uncurry :: (a -> b -> c) -> (a, b) -> c
+        uncurry f (a, b) = f a b
+
+    print $ (-) 5 2
+    print $ (uncurry (-)) (5, 2)
+    print $ (curry . uncurry $ (-)) 5 2
+
+    let flip :: (a -> b -> c) -> (b -> a -> c)
+        flip f b a = f a b
+
+    print $ (flip (-)) 2 5
+
+    let curryLambda :: ((a, b) -> c) -> a -> b -> c
+        curryLambda  = \f a b -> f (a, b)
+
+        uncurryLambda :: (a -> b -> c) -> (a, b) -> c
+        uncurryLambda =  \f (a, b) -> f a b
+
+    print $ (uncurryLambda (-)) (5, 2)
+    print $ (curryLambda . uncurry $ (-)) 5 2
+
+    let flipLambda :: (a -> b -> c) -> (b -> a -> c)
+        flipLambda =  \f b a -> f a b
+
+    print $ (flipLambda (-)) 2 5

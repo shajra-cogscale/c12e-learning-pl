@@ -1,6 +1,101 @@
 #!/usr/bin/env scala
 
 
-def hello = "hello"
+val addLambda: Int => Int => Int =
+  { a => { b => a + b } }
 
-println(hello)
+println(addLambda(1)(2))
+
+val _addLambda: Int => Int => Int =
+  a => b => a + b
+
+println(_addLambda(1)(2))
+
+def addLambdaHalf(a: Int): Int => Int =
+  b => a + b
+
+println(addLambdaHalf(1)(2))
+
+def addCurry(a: Int)(b: Int): Int =
+  a + b
+
+println(addCurry(1)(2))
+
+def add(a: Int, b: Int): Int =
+  a + b
+
+println(add(1,2))
+
+val addUncurried: (Int, Int) => Int =
+  (a, b) => a + b
+
+println(addUncurried(1, 2))
+println(addUncurried.tupled((1, 2)))
+
+val addUncurriedTupled: ((Int, Int)) => Int =
+  t => t._1 + t._2
+
+println(addUncurriedTupled((1, 2)))
+
+val addLambdaOne =
+  addLambda(1)
+
+println(addLambdaOne(2))
+
+val addOne =
+  add(1, _: Int)  // underscore is partial application
+
+println(addOne(2))
+
+val addCurryOne =
+  addCurry(1)_  // underscore is eta expansion
+
+println(addCurryOne(2))
+
+val addLambdaHalfOne =
+  addLambdaHalf(1)
+
+println(addLambdaHalfOne(2))
+
+val addUncurriedOne =
+  addUncurried(1, _: Int)
+
+println(addUncurriedOne(2))
+
+val addUncurriedTupledOne: Int => Int =
+  x => addUncurriedTupled((1, x))
+
+println(addUncurriedTupledOne(2))
+
+
+def curry[A, B, C](f: (A, B) => C): A => B => C =
+  a => b => f(a, b)
+
+def sub(a: Int, b: Int) = a - b
+
+println(curry(sub)(5)(2))
+
+def uncurry[A, B, C](f: A => B => C): (A, B) => C =
+  (a, b) => f(a)(b)
+
+println(uncurry(curry(sub))(5, 2))
+
+def flip[A, B, C](f: A => B => C): B => A => C =
+  b => a => f(a)(b)
+
+println(flip(curry(sub))(2)(5))
+
+def curryLambda[A, B, C]: ((A, B) => C) => (A => B => C) =
+  f => a => b => f(a, b)
+
+println(curryLambda(sub)(5)(2))
+
+def uncurryLambda[A, B, C]: (A => B => C) => ((A, B) => C) =
+  f => (a, b) => f(a)(b)
+
+println(uncurryLambda(curryLambda(sub))(5, 2))
+
+def flipLambda[A, B, C]: (A => B => C) => (B => A => C) =
+  f => b => a => f(a)(b)
+
+println(flipLambda(curry(sub))(2)(5))

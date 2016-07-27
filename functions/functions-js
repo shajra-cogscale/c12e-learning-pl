@@ -2,8 +2,101 @@
 ':' //; exec "$(command -v nodejs || command -v node)" "$0" "$@"
 
 
-function hello() {
-    return "hello"
+var addLambda =
+    function (a) {
+        return function (b) {
+          return a + b
+        }
+    }
+
+console.log(addLambda(1)(2))
+
+function addLambdaHalf(a) {
+    return function (b) {
+      return a + b
+    }
 }
 
-console.log(hello());
+console.log(addLambdaHalf(1)(2))
+
+function add(a, b) {
+    return a + b
+}
+
+console.log(add(1, 2))
+
+var addUncurried =
+    function (a, b) {
+        return a + b
+    }
+
+console.log(addUncurried(1, 2))
+
+var addLambdaOne = addLambda(1)
+console.log(addLambdaOne(2))
+
+var addLambdaHalfOne = addLambdaHalf(1)
+console.log(addLambdaHalfOne(2))
+
+function curry(f) {
+    return function(a) {
+        return function (b) {
+            return f(a, b)
+        }
+    }
+}
+
+function sub(a, b) {
+    return a - b
+}
+
+console.log(curry(sub)(5)(2))
+
+function uncurry(f) {
+    return function(a, b) {
+        return f(a)(b)
+    }
+}
+
+console.log(uncurry(curry(sub))(5, 2))
+
+function flip(f) {
+    return function(b) {
+        return function (a) {
+            return f(a)(b)
+        }
+    }
+}
+
+console.log(flip(curry(sub))(2)(5))
+
+var curryLambda =
+    function (f) {
+        return function(a) {
+            return function (b) {
+                return f(a, b)
+            }
+        }
+    }
+
+console.log(curryLambda(sub)(5)(2))
+
+var uncurryLambda =
+    function (f) {
+        return function(a, b) {
+            return f(a)(b)
+        }
+    }
+
+console.log(uncurryLambda(curryLambda(sub))(5, 2))
+
+var flipLambda =
+    function (f) {
+        return function(b) {
+            return function (a) {
+                return f(a)(b)
+            }
+        }
+    }
+
+console.log(flipLambda(curry(sub))(2)(5))
