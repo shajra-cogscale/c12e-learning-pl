@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+
+
+def contains(i, s): return s(i)
+
+empty = lambda i: False
+
+def singleton(i):
+    return lambda j: True if i == j else False
+
+def insert(i, s):
+    return lambda j: True if i == j else contains(j, s)
+
+def remove(i, s):
+    return lambda j: False if i == j else contains(j, s)
+
+def union(s1, s2):
+    return lambda i: contains(i, s1) or contains(i, s2)
+
+def intersection(s1, s2):
+    return lambda i: contains(i, s1) and contains(i, s2)
+
+def insertAll(elems):
+    return reduce(lambda s, i: insert(i, s), elems, empty)
+
+def containsAll(elems, s):
+    return reduce(lambda b, i: b and contains(i, s), elems, True)
+
+def containsNo(elems, s):
+    return reduce(lambda b, i: b and not contains(i, s), elems, True)
+
+print(not contains(1, empty))
+
+print(contains(1, singleton(1)))
+
+print(
+    (lambda s: contains(1, s) and not contains(2, s))
+    (singleton(1)))
+
+print(not contains(1, remove(1, singleton(1))))
+
+print(
+    (lambda s: contains(1, s) and not contains(2, s))
+    (remove(2, singleton(1))))
+
+print(
+    (lambda s: containsAll([1, 2, 3, 4], s))
+    (union(insertAll([1, 2]), insertAll([3, 4]))))
+
+print(
+    (lambda s: contains(2, s) and containsNo([1, 3], s))
+    (intersection(insertAll([1, 2]), insertAll([2, 3]))))

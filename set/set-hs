@@ -1,0 +1,62 @@
+#!/usr/bin/env stack
+-- stack --install-ghc runghc
+
+
+type Set = Int -> Bool
+
+
+contains :: Int -> Set -> Bool
+contains i s = s i
+
+empty :: Set
+empty _ = False
+
+singleton :: Int -> Set
+singleton i j = if i == j then True else False
+
+insert :: Int -> Set -> Set
+insert i s j = if i == j then True else contains j s
+
+remove :: Int -> Set -> Set
+remove i s j = if i == j then False else contains j s
+
+union :: Set -> Set -> Set
+union s1 s2 i = (contains i s1) || (contains i s2)
+
+intersection :: Set -> Set -> Set
+intersection s1 s2 i = (contains i s1) && (contains i s2)
+
+insertAll :: [Int] -> Set
+insertAll = foldr insert empty
+
+containsAll :: [Int] -> Set -> Bool
+containsAll is s = foldr ((&&) . flip contains s) True is
+
+containsNo :: [Int] -> Set -> Bool
+containsNo is s = foldr ((&&) . not . flip contains s) True is
+
+
+main :: IO ()
+main = do
+
+    print . not $ contains 1 empty
+
+    print . contains 1 $ singleton 1
+
+    print
+        . (\s -> contains 1 s && (not . contains 2) s)
+        $ singleton 1
+
+    print . not . contains 1 . remove 1 $ singleton 1
+
+    print
+        . (\s -> contains 1 s && (not . contains 2) s)
+        . remove 2 $ singleton 1
+
+    print
+        . containsAll [1, 2, 3, 4]
+        $ union (insertAll [1, 2]) (insertAll [3, 4])
+
+    print
+        . (\s -> contains 2 s && containsNo [1, 3] s)
+        $ intersection (insertAll [1, 2]) (insertAll [2, 3])
