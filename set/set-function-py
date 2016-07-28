@@ -20,7 +20,7 @@ def union(s1, s2):
 def intersection(s1, s2):
     return lambda i: contains(i, s1) and contains(i, s2)
 
-def insertAll(elems):
+def multiple(elems):
     return reduce(lambda s, i: insert(i, s), elems, empty)
 
 def containsAll(elems, s):
@@ -45,8 +45,8 @@ print(
 
 print(
     (lambda s: containsAll([1, 2, 3, 4], s))
-    (union(insertAll([1, 2]), insertAll([3, 4]))))
+    (union(multiple([1, 2]), multiple([3, 4]))))
 
 print(
     (lambda s: contains(2, s) and containsNo([1, 3], s))
-    (intersection(insertAll([1, 2]), insertAll([2, 3]))))
+    (intersection(multiple([1, 2]), multiple([2, 3]))))
