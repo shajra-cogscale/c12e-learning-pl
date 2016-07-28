@@ -12,6 +12,12 @@ function singleton(i) {
     }
 }
 
+function multiple(elems) {
+    return function (i) {
+        return elems.indexOf(i) >= 0
+    }
+}
+
 function insert(i, s) {
     return function(j) {
         if (i == j) { return true } else { return contains(j, s) }
@@ -36,10 +42,6 @@ function intersection(s1, s2) {
     }
 }
 
-function multiple(elems) {
-    return elems.reduce(function (s, i) { return insert(i, s) }, empty)
-}
-
 function containsAll(elems, s) {
     return elems.reduce(function (b, i) { return b && contains(i, s) }, true)
 }
@@ -47,6 +49,7 @@ function containsAll(elems, s) {
 function containsNo(elems, s) {
     return elems.reduce(function (b, i) { return b && ! contains(i, s) }, true)
 }
+
 
 console.log(!contains(1, empty))
 

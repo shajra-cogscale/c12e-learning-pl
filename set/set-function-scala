@@ -13,6 +13,9 @@ val empty: Set =
 def singleton(i: Int): Set =
   j => if (i == j) true else false
 
+def multiple(is: Int*): Set =
+  i => is contains i
+
 def insert(i: Int, s: Set): Set =
   j => if (i == j) true else contains(j, s)
 
@@ -24,9 +27,6 @@ def union(s1: Set, s2: Set): Set =
 
 def intersection(s1: Set, s2: Set): Set =
   i => contains(i, s1) && contains(i, s2)
-
-def multiple(is: List[Int]): Set =
-  is.foldRight(empty)(insert)
 
 def containsAll(is: List[Int], s: Set): Boolean =
   is.foldRight(true) { (i, b) => b && contains(i, s) }
@@ -50,9 +50,9 @@ println(
 
 println(
   { s: Set => containsAll(List(1, 2, 3, 4), s) }
-    .apply(union(multiple(List(1, 2)), multiple(List(3, 4)))))
+    .apply(union(multiple(1, 2), multiple(3, 4))))
 
 println(
   { s: Set => contains(2, s) && containsNo(List(1, 3), s) }
-    .apply(intersection(multiple(List(1, 2)), multiple(List(2, 3)))))
+    .apply(intersection(multiple(1, 2), multiple(2, 3))))
 

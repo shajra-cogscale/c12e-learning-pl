@@ -2,6 +2,10 @@
 -- stack --install-ghc runghc
 
 
+import Data.Foldable (find)
+import Data.Maybe (isJust)
+
+
 type Set = Int -> Bool
 
 
@@ -14,6 +18,9 @@ empty _ = False
 singleton :: Int -> Set
 singleton i j = if i == j then True else False
 
+multiple :: [Int] -> Set
+multiple is i = isJust $ find (i ==) is
+
 insert :: Int -> Set -> Set
 insert i s j = if i == j then True else contains j s
 
@@ -25,9 +32,6 @@ union s1 s2 i = (contains i s1) || (contains i s2)
 
 intersection :: Set -> Set -> Set
 intersection s1 s2 i = (contains i s1) && (contains i s2)
-
-multiple :: [Int] -> Set
-multiple = foldr insert empty
 
 containsAll :: [Int] -> Set -> Bool
 containsAll is s = foldr ((&&) . flip contains s) True is
