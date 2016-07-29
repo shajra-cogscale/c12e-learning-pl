@@ -36,12 +36,13 @@ function orL(a) {
     }
 }
 
+
 function lToBool(a) { return condL(a)(true)(false) }
 function BoolTol(b) { if (b) { return trueL } else { return falseL } }
 
 
 function test(expected, expr) {
-    console.log(expected == lToBool(expr))
+    console.log(expected === lToBool(expr))
 }
 
 test(false, notL(trueL ))

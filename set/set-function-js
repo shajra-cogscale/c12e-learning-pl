@@ -8,7 +8,7 @@ empty = function(i) { return false }
 
 function singleton(i) {
     return function (j) {
-        if (i == j) { return true } else { return false }
+        if (i === j) { return true } else { return false }
     }
 }
 
@@ -20,13 +20,13 @@ function multiple(elems) {
 
 function insert(i, s) {
     return function(j) {
-        if (i == j) { return true } else { return contains(j, s) }
+        if (i === j) { return true } else { return contains(j, s) }
     }
 }
 
 function remove(i, s) {
     return function(j) {
-        if (i == j) { return false } else { return contains(j, s) }
+        if (i === j) { return false } else { return contains(j, s) }
     }
 }
 
