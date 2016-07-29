@@ -1,0 +1,58 @@
+#!/bin/sh
+':' //; exec "$(command -v nodejs || command -v node)" "$0" "$@"
+
+
+var trueL =
+    function (a) {
+        return function (b) { return a }
+    }
+
+var falseL =
+    function (a) {
+        return function (b) { return b }
+    }
+
+function condL(p) {
+    return function (ifTrue) {
+        return function (ifFalse) {
+            return p(ifTrue)(ifFalse)
+        }
+    }
+}
+
+function notL(p) {
+    return condL(p)(falseL)(trueL)
+}
+
+function andL(a) {
+    return function (b) {
+        return condL(a)(condL(b)(trueL)(falseL))(falseL)
+    }
+}
+
+function orL(a) {
+    return function (b) {
+        return condL(a)(trueL)(condL(b)(trueL)(falseL))
+    }
+}
+
+function lToBool(a) { return condL(a)(true)(false) }
+function BoolTol(b) { if (b) { return trueL } else { return falseL } }
+
+
+function test(expected, expr) {
+    console.log(expected == lToBool(expr))
+}
+
+test(false, notL(trueL ))
+test(true , notL(falseL))
+
+test(true , andL(trueL )(trueL ))
+test(false, andL(falseL)(trueL ))
+test(false, andL(trueL )(falseL))
+test(false, andL(falseL)(falseL))
+
+test(true , orL(trueL )(trueL ))
+test(true , orL(falseL)(trueL ))
+test(true , orL(trueL )(falseL))
+test(false, orL(falseL)(falseL))

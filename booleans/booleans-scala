@@ -1,0 +1,92 @@
+#!/usr/bin/env scala
+
+
+sealed abstract class BoolADT
+case object TrueADT extends BoolADT
+case object FalseADT extends BoolADT
+
+
+def trueADT: BoolADT = TrueADT
+def falseADT: BoolADT = FalseADT
+
+def condADT[A](b: BoolADT)(ifTrue: A)(ifFalse: A): A =
+  b match {
+    case TrueADT  => ifTrue
+    case FalseADT => ifFalse
+  }
+
+def notADT(b: BoolADT): BoolADT =
+  condADT(b)(falseADT)(trueADT)
+
+def andADT(a: BoolADT, b: BoolADT): BoolADT =
+  condADT(a)(condADT(b)(trueADT)(falseADT))(falseADT)
+
+def orADT(a: BoolADT, b: BoolADT): BoolADT =
+  condADT(a)(trueADT)(condADT(b)(trueADT)(falseADT))
+
+def adtToBool(p: BoolADT): Boolean = condADT(p)(true)(false)
+def boolToADT(p: Boolean): BoolADT = if (p) trueADT else falseADT
+
+
+trait BoolL {
+  def apply[A](ifTrue: A)(ifFalse: A): A
+}
+
+val trueL: BoolL =
+  new BoolL {
+    def apply[A](ifTrue: A)(ifFalse: A) = ifTrue
+  }
+
+val falseL: BoolL =
+  new BoolL {
+    def apply[A](ifTrue: A)(ifFalse: A) = ifFalse
+  }
+
+def condL[A]: BoolL => A => A => A =
+  p => ifTrue => ifFalse => p(ifTrue)(ifFalse)
+
+val notL: BoolL => BoolL =
+  p => condL(p)(falseL)(trueL)
+
+val andL: BoolL => BoolL => BoolL =
+  a => b => condL(a)(condL(b)(trueL)(falseL))(falseL)
+
+val orL: BoolL => BoolL => BoolL =
+  a => b => condL(a)(trueL)(condL(b)(trueL)(falseL))
+
+def lToBool(p: BoolL): Boolean = condL(p)(true)(false)
+def boolToL(p: Boolean): BoolL = if (p) trueL else falseL
+  
+
+def testADT(expected: Boolean)(expr: BoolADT): Unit =
+    println(expected == adtToBool(expr))
+
+testADT(false)(notADT(trueADT))
+testADT(true )(notADT(falseADT))
+
+testADT(true )(andADT(trueADT , trueADT ))
+testADT(false)(andADT(trueADT , falseADT))
+testADT(false)(andADT(falseADT, trueADT ))
+testADT(false)(andADT(falseADT, falseADT))
+
+testADT(true )(orADT(trueADT , trueADT ))
+testADT(true )(orADT(trueADT , falseADT))
+testADT(true )(orADT(falseADT, trueADT ))
+testADT(false)(orADT(falseADT, falseADT))
+
+
+def testL(expected: Boolean)(expr: BoolL): Unit =
+    println(expected == lToBool(expr))
+
+testL(false)(notL(trueL))
+testL(true )(notL(falseL))
+
+testL(true )(andL(trueL )(trueL ))
+testL(false)(andL(trueL )(falseL))
+testL(false)(andL(falseL)(trueL ))
+testL(false)(andL(falseL)(falseL))
+
+testL(true )(orL(trueL )(trueL ))
+testL(true )(orL(trueL )(falseL))
+testL(true )(orL(falseL)(trueL ))
+testL(false)(orL(falseL)(falseL))

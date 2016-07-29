@@ -1,0 +1,76 @@
+#!/usr/bin/env stack
+-- stack --install-ghc runghc
+
+
+{-# LANGUAGE NoImplicitPrelude, RankNTypes #-}
+import Prelude hiding (Bool(..), not, (||), (&&))
+
+
+data Bool = True | False deriving (Eq, Show)
+
+not :: Bool -> Bool
+not True =  False
+not False = True
+
+(&&) :: Bool -> Bool -> Bool
+infixr 3 &&
+True  && True  = True
+True  && False = False
+False && True  = False
+False && False = False
+
+(||) :: Bool -> Bool -> Bool
+infixr 2 ||
+True  || True  = True
+True  || False = True
+False || True  = True
+False || False = False
+
+
+type BoolL = forall a. a -> a -> a
+
+trueL :: BoolL
+trueL a b = a
+
+falseL :: BoolL
+falseL a b = b
+
+condL :: BoolL -> a -> a -> a
+condL p = p
+
+notL :: BoolL -> BoolL
+notL p = p falseL trueL
+
+andL :: BoolL -> BoolL -> BoolL
+andL a b = condL a (condL b trueL falseL) falseL
+
+orL :: BoolL -> BoolL -> BoolL
+orL a b = condL a trueL (condL b trueL falseL)
+
+
+boolToL :: Bool -> BoolL
+boolToL True = trueL
+boolToL False = falseL
+
+lToBool :: BoolL -> Bool
+lToBool p = condL p True False
+
+
+test expected =  print . (expected ==) . lToBool
+
+
+main :: IO ()
+main = do
+
+    test False $ notL trueL
+    test True  $ notL falseL
+
+    test True  $ andL trueL  trueL
+    test False $ andL trueL  falseL
+    test False $ andL falseL trueL
+    test False $ andL falseL falseL
+
+    test True  $ orL trueL  trueL
+    test True  $ orL trueL  falseL
+    test True  $ orL falseL trueL
+    test False $ orL falseL falseL
