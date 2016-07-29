@@ -1,0 +1,64 @@
+#!/usr/bin/env scala
+
+
+trait Set {
+
+  def contains(i: Int): Boolean
+
+  def containsAll(elems: Int*): Boolean =
+    elems.foldRight(true) { (i, b) => b && contains(i) }
+
+  def containsNo(elems: Int*): Boolean =
+    elems.foldRight(true) { (i, b) => b && !contains(i) }
+
+}
+
+
+object Set {
+
+  val empty: Set =
+    new Set { def contains(i: Int) = false }
+
+  def singleton(i: Int): Set =
+    new Set { def contains(j: Int) = if (i == j) true else false }
+
+  def multiple(is: Int*): Set =
+    new Set { def contains(i: Int) = is contains i }
+
+  def insert(i: Int, s: Set): Set =
+    new Set { def contains(j: Int) = if (i == j) true else s.contains(j) }
+
+  def remove(i: Int, s: Set): Set =
+    new Set { def contains(j: Int) = if (i == j) false else s.contains(j) }
+
+  def union(s1: Set, s2: Set): Set =
+    new Set { def contains(i: Int) = s1.contains(i) || s2.contains(i) }
+
+  def intersection(s1: Set, s2: Set): Set =
+    new Set { def contains(i: Int) = s1.contains(i) && s2.contains(i) }
+
+}
+
+
+import Set._
+
+println(!empty.contains(1))
+
+println(singleton(1).contains(1))
+
+println(
+  { s: Set => s.contains(1) && !s.contains(2) } apply singleton(1))
+
+println(!remove(1, singleton(1)).contains(1))
+
+println(
+  { s: Set => s.contains(1) && !s.contains(2) }
+    .apply(remove(2, singleton(1))))
+
+println(
+  { s: Set => s.containsAll(1, 2, 3, 4) }
+    .apply(union(multiple(1, 2), multiple(3, 4))))
+
+println(
+  { s: Set => s.contains(2) && s.containsNo(1, 3) }
+    .apply(intersection(multiple(1, 2), multiple(2, 3))))

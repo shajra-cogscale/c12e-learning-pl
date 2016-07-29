@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+
+class Set:
+
+    def __init__(self, contains_fn):
+        self.contains_fn = contains_fn
+
+    @staticmethod
+    def empty():
+        return Set(lambda i: False)
+
+    @staticmethod
+    def singleton(i):
+        return Set(lambda j: i == j)
+
+    @staticmethod
+    def multiple(*elems):
+        return Set(lambda i: i in elems)
+
+    def contains(self, i):
+        return self.contains_fn(i)
+
+    def containsAll(self, *elems):
+        return reduce(lambda b, i: b and self.contains(i), elems, True)
+
+    def containsNo(self, *elems):
+        return reduce(lambda b, i: b and not self.contains(i), elems, True)
+
+    def remove(self, i):
+        return Set(lambda j: False if i == j else self.contains(j))
+
+    def insert(self, i):
+        return Set(lambda j: True if i == j else self.contains(j))
+
+    def union(self, set):
+        return Set(lambda i: self.contains(i) or set.contains(i))
+
+    def intersection(self, set):
+        return Set(lambda i: self.contains(i) and set.contains(i))
+
+
+print(not Set.empty().contains(1))
+
+print(Set.singleton(1).contains(1))
+
+print(
+    (lambda s: s.contains(1) and not s.contains(2))
+    (Set.singleton(1)))
+
+print(not Set.singleton(1).remove(1).contains(1))
+
+print(
+    (lambda s: s.contains(1) and not s.contains(2))
+    (Set.singleton(1).remove(2)))
+
+print(
+    (lambda s: s.containsAll(1, 2, 3, 4))
+    (Set.multiple(1, 2).union(Set.multiple(3, 4))))
+
+print(
+    (lambda s: s.contains(2) and s.containsNo(1, 3))
+    (Set.multiple(1, 2).intersection(Set.multiple(2,3))))
