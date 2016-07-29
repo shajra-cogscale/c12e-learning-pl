@@ -9,7 +9,7 @@ import Prelude hiding (flip, curry, uncurry)
 main :: IO ()
 main = do
 
-    let addLambda :: Int -> Int -> Int
+    let addLambda :: (Int -> (Int -> Int))
         addLambda = (\a -> (\b -> a + b))
 
     print $ addLambda 1 2
