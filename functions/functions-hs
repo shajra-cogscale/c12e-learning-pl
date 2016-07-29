@@ -3,7 +3,7 @@
 
 
 {-# LANGUAGE NoImplicitPrelude #-}
-import Prelude hiding (curry, uncurry)
+import Prelude hiding (flip, curry, uncurry)
 
 
 main :: IO ()
@@ -44,10 +44,22 @@ main = do
 
     print $ addUncurried' (1, 2)
 
+    let addUncurried'' :: (Int, Int) -> Int
+        addUncurried'' p =
+            case p of
+                (a, b) -> a + b
+
+    print $ addUncurried'' (1, 2)
+
     let addOne :: Int -> Int
         addOne = add 1
 
     print $ addOne 2
+
+    let addOne' :: Int -> Int
+        addOne' x = add 1 x
+
+    print $ addOne' 2
 
     let addUncurriedOne :: Int -> Int
         addUncurriedOne x = addUncurried (1, x)
@@ -60,11 +72,12 @@ main = do
         uncurry :: (a -> b -> c) -> (a, b) -> c
         uncurry f (a, b) = f a b
 
+    print $ 5 - 2
     print $ (-) 5 2
-    print $ (uncurry (-)) (5, 2)
-    print $ (curry . uncurry $ (-)) 5 2
+    print $ uncurry (-) (5, 2)
+    print $ (curry . uncurry) (-) 5 2
 
-    let flip :: (a -> b -> c) -> (b -> a -> c)
+    let flip :: (a -> b -> c) -> b -> a -> c
         flip f b a = f a b
 
     print $ (flip (-)) 2 5
@@ -73,12 +86,12 @@ main = do
         curryLambda  = \f a b -> f (a, b)
 
         uncurryLambda :: (a -> b -> c) -> (a, b) -> c
-        uncurryLambda =  \f (a, b) -> f a b
+        uncurryLambda = \f (a, b) -> f a b
 
-    print $ (uncurryLambda (-)) (5, 2)
-    print $ (curryLambda . uncurry $ (-)) 5 2
+    print $ uncurryLambda (-) (5, 2)
+    print $ (curryLambda . uncurry) (-) 5 2
 
     let flipLambda :: (a -> b -> c) -> (b -> a -> c)
-        flipLambda =  \f b a -> f a b
+        flipLambda = \f b a -> f a b
 
-    print $ (flipLambda (-)) 2 5
+    print $ flipLambda (-) 2 5
