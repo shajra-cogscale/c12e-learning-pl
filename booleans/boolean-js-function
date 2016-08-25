@@ -38,7 +38,7 @@ function orL(a) {
 
 
 function lToBool(a) { return condL(a)(true)(false) }
-function BoolTol(b) { if (b) { return trueL } else { return falseL } }
+function boolToL(b) { return b ? trueL : falseL }
 
 
 function test(expected, expr) {

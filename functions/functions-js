@@ -99,4 +99,4 @@ var flipLambda =
         }
     }
 
-console.log(flipLambda(curry(sub))(2)(5))
+console.log(flipLambda(curryLambda(sub))(2)(5))

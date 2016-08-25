@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+
+
+class BoolI:
+
+    def __init__(self, cond_fn):
+        self.cond_fn = cond_fn
+
+    def cond(self, ifTrue, ifFalse):
+        return self.cond_fn(ifTrue)(ifFalse)
+
+
+trueI = BoolI(lambda t: lambda f: t)
+
+falseI = BoolI(lambda t: lambda f: f)
+
+def notI(b): return b.cond(falseI, trueI)
+
+def andI(a, b): return a.cond(b.cond(trueI, falseI), falseI)
+
+def orI(a, b): return a.cond(trueI, b.cond(trueI, falseI))
+
+def notI2(b):
+    return BoolI(lambda t: lambda f: \
+        b.cond(falseI.cond(t, f), trueI.cond(t, f)))
+
+def andI2(a, b):
+    return BoolI(lambda t: lambda f: \
+        a.cond(
+            b.cond(trueI.cond(t, f), falseI.cond(t, f)),
+            falseI.cond(t, f)))
+
+def orI2(a, b):
+    return BoolI(lambda t: lambda f: \
+        a.cond(
+            trueI.cond(t, f),
+            b.cond(trueI.cond(t, f), falseI.cond(t, f))))
+
+def iToPy(i): return i.cond(True, False)
+
+def pyToI(p): return trueI if p else falseI
+
+
+def test(expected, expr):
+    print(expected == iToPy(expr))
+
+test(False, notI(trueI ))
+test(True , notI(falseI))
+
+test(True , andI(trueI , trueI ))
+test(False, andI(falseI, trueI ))
+test(False, andI(trueI , falseI))
+test(False, andI(falseI, falseI))
+
+test(True , orI(trueI , trueI ))
+test(True , orI(falseI, trueI ))
+test(True , orI(trueI , falseI))
+test(False, orI(falseI, falseI))
+
+test(False, notI2(trueI ))
+test(True , notI2(falseI))
+
+test(True , andI2(trueI , trueI ))
+test(False, andI2(falseI, trueI ))
+test(False, andI2(trueI , falseI))
+test(False, andI2(falseI, falseI))
+
+test(True , orI2(trueI , trueI ))
+test(True , orI2(falseI, trueI ))
+test(True , orI2(trueI , falseI))
+test(False, orI2(falseI, falseI))

@@ -1,0 +1,30 @@
+#!/bin/sh
+':' //; exec "$(command -v nodejs || command -v node)" "$0" "$@"
+
+
+var trueL = a => b => a
+var falseL = a => b => b
+var condL = p => ifTrue => ifFalse => p(ifTrue)(ifFalse)
+var notL = p => condL(p)(falseL)(trueL)
+var andL = a => b => condL(a)(condL(b)(trueL)(falseL))(falseL)
+var orL = a => b => condL(a)(trueL)(condL(b)(trueL)(falseL))
+var lToBool = a => condL(a)(true)(false)
+var boolToL = b => b ? trueL : falseL
+
+
+function test(expected, expr) {
+    console.log(expected === lToBool(expr))
+}
+
+test(false, notL(trueL ))
+test(true , notL(falseL))
+
+test(true , andL(trueL )(trueL ))
+test(false, andL(falseL)(trueL ))
+test(false, andL(trueL )(falseL))
+test(false, andL(falseL)(falseL))
+
+test(true , orL(trueL )(trueL ))
+test(true , orL(falseL)(trueL ))
+test(true , orL(trueL )(falseL))
+test(false, orL(falseL)(falseL))

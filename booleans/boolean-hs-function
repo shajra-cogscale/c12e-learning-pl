@@ -31,7 +31,7 @@ cond True ifTrue _ = ifTrue
 cond False _ ifFalse = ifFalse
 
 not :: Bool -> Bool
-not = cond False True
+not b = cond b False True
 
 and :: Bool -> Bool -> Bool
 a `and` b = cond a (cond b True False) False

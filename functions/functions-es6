@@ -1,0 +1,51 @@
+#!/bin/sh
+':' //; exec "$(command -v nodejs || command -v node)" "$0" "$@"
+
+
+var addLambda = a => b => a + b
+console.log(addLambda(1)(2))
+
+function addLambdaHalf(a) {
+  return b => a + b
+}
+console.log(addLambdaHalf(1)(2))
+
+function add(a, b) {
+    return a + b
+}
+console.log(add(1, 2))
+
+var addUncurried = (a, b) => a + b
+console.log(addUncurried(1, 2))
+
+var addLambdaOne = addLambda(1)
+console.log(addLambdaOne(2))
+
+var addLambdaHalfOne = addLambdaHalf(1)
+console.log(addLambdaHalfOne(2))
+
+function curry(f) {
+    return a => b => f(a, b)
+}
+
+var sub = (a, b) => a - b
+console.log(curry(sub)(5)(2))
+
+function uncurry(f) {
+    return (a, b) => f(a)(b)
+}
+console.log(uncurry(curry(sub))(5, 2))
+
+function flip(f) {
+    return b => a => f(a)(b)
+}
+console.log(flip(curry(sub))(2)(5))
+
+var curryLambda = f => a => b => f(a, b)
+console.log(curryLambda(sub)(5)(2))
+
+var uncurryLambda = f => (a, b) => f(a)(b)
+console.log(uncurryLambda(curryLambda(sub))(5, 2))
+
+var flipLambda = f => b => a => f(a)(b)
+console.log(flipLambda(curryLambda(sub))(2)(5))

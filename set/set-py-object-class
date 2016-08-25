@@ -4,7 +4,7 @@
 class Set:
 
     def __init__(self, contains_fn):
-        self.contains_fn = contains_fn
+        self.__contains_fn = contains_fn
 
     @staticmethod
     def empty():
@@ -19,7 +19,7 @@ class Set:
         return Set(lambda i: i in elems)
 
     def contains(self, i):
-        return self.contains_fn(i)
+        return self.__contains_fn(i)
 
     def containsAll(self, *elems):
         return reduce(lambda b, i: b and self.contains(i), elems, True)

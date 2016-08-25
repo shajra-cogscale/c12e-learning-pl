@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+
+class BoolC:
+
+    def __init__(self, cond_fn):
+        self.__cond_fn = cond_fn
+
+    @staticmethod
+    def true():
+        return BoolC(lambda t: lambda f: t)
+
+    @staticmethod
+    def false():
+        return BoolC(lambda t: lambda f: f)
+
+    @staticmethod
+    def fromPy(p): return true() if p else false()
+
+    def cond(self, ifTrue, ifFalse):
+        return self.__cond_fn(ifTrue)(ifFalse)
+
+    def notC(self):
+        return self.cond(BoolC.false(), BoolC.true())
+
+    def andC(self, b):
+        return self.cond(
+            b.cond(BoolC.true(),
+            BoolC.false()), BoolC.false())
+
+    def orC(self, b):
+        return self.cond(
+            BoolC.true(),
+            b.cond(BoolC.true(), BoolC.false()))
+
+    def toPy(self): return self.cond(True, False)
+
+
+def test(expected, expr):
+    print(expected == expr.toPy())
+
+test(False, BoolC.true().notC())
+test(True , BoolC.false().notC())
+
+test(True , BoolC.true().andC(BoolC.true()))
+test(False, BoolC.false().andC(BoolC.true()))
+test(False, BoolC.true().andC(BoolC.false()))
+test(False, BoolC.false().andC(BoolC.false()))
+
+test(True , BoolC.true().orC(BoolC.true()))
+test(True , BoolC.false().orC(BoolC.true()))
+test(True , BoolC.true().orC(BoolC.false()))
+test(False, BoolC.false().orC(BoolC.false()))
