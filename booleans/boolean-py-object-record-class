@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+
+
+def boolH(cond_fn):
+    self = {}
+    self["cond"] = cond_fn 
+    self["not"] = lambda: self["cond"](falseH(), trueH())
+    self["and"] = lambda b: self["cond"](b["cond"](trueH(), falseH()), falseH())
+    self["or"] = lambda b: self["cond"](trueH(), b["cond"](trueH(), falseH()))
+    return self
+
+def trueH(): return boolH(lambda t, f: t)
+def falseH(): return boolH(lambda t, f: f)
+
+def hToPy(h): return h["cond"](True, False)
+def pyToH(p): return trueH() if p else falseH()
+
+
+def test(expected, expr):
+    print(expected == hToPy(expr))
+
+test(False, trueH()["not"]())
+test(True, falseH()["not"]())
+
+test(True, trueH()["and"](trueH()))
+test(False, falseH()["and"](trueH()))
+test(False, trueH()["and"](falseH()))
+test(False, falseH()["and"](falseH()))
+
+test(True, trueH()["or"](trueH()))
+test(True, falseH()["or"](trueH()))
+test(True, trueH()["or"](falseH()))
+test(False, falseH()["or"](falseH()))

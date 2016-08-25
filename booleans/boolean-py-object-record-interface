@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+
+def boolH(cond_fn):
+    return {
+        "cond": cond_fn 
+    }
+
+trueH = boolH(lambda t, f: t)
+
+falseH = boolH(lambda t, f: f)
+
+def notH(b): return b["cond"](falseH, trueH)
+
+def andH(a, b): return a["cond"](b["cond"](trueH, falseH), falseH)
+
+def orH(a, b): return a["cond"](trueH, b["cond"](trueH, falseH))
+
+def notH2(b):
+    return boolH(lambda t, f: \
+        b["cond"](falseH["cond"](t, f), trueH["cond"](t, f)))
+
+def andH2(a, b):
+    return boolH(lambda t, f: \
+        a["cond"](
+            b["cond"](trueH["cond"](t, f), falseH["cond"](t, f)),
+            falseH["cond"](t, f)))
+
+def orH2(a, b):
+    return boolH(lambda t, f: \
+        a["cond"](
+            trueH["cond"](t, f),
+            b["cond"](trueH["cond"](t, f), falseH["cond"](t, f))))
+
+def hToPy(h): return h["cond"](True, False)
+
+def pyToH(p): return trueH if p else falseH
+
+
+def test(expected, expr):
+    print(expected == hToPy(expr))
+
+test(False, notH(trueH ))
+test(True , notH(falseH))
+
+test(True , andH(trueH , trueH ))
+test(False, andH(falseH, trueH ))
+test(False, andH(trueH , falseH))
+test(False, andH(falseH, falseH))
+
+test(True , orH(trueH , trueH ))
+test(True , orH(falseH, trueH ))
+test(True , orH(trueH , falseH))
+test(False, orH(falseH, falseH))
+
+test(False, notH2(trueH ))
+test(True , notH2(falseH))
+
+test(True , andH2(trueH , trueH ))
+test(False, andH2(falseH, trueH ))
+test(False, andH2(trueH , falseH))
+test(False, andH2(falseH, falseH))
+
+test(True , orH2(trueH , trueH ))
+test(True , orH2(falseH, trueH ))
+test(True , orH2(trueH , falseH))
+test(False, orH2(falseH, falseH))
