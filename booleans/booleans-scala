@@ -56,7 +56,7 @@ val orL: BoolL => BoolL => BoolL =
 
 def lToBool(p: BoolL): Boolean = condL(p)(true)(false)
 def boolToL(p: Boolean): BoolL = if (p) trueL else falseL
-  
+
 
 def testADT(expected: Boolean)(expr: BoolADT): Unit =
     println(expected == adtToBool(expr))

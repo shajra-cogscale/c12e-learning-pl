@@ -3,14 +3,14 @@
 
 
 {-# LANGUAGE NoImplicitPrelude, RankNTypes #-}
-import Prelude hiding (Bool(..), not, (||), (&&))
+import Prelude hiding (Bool(True, False), not, and, or, (||), (&&))
 
 
 data Bool = True | False deriving (Eq, Show)
 
-not :: Bool -> Bool
-not True =  False
-not False = True
+not' :: Bool -> Bool
+not' True =  False
+not' False = True
 
 (&&) :: Bool -> Bool -> Bool
 infixr 3 &&
@@ -26,6 +26,19 @@ True  || False = True
 False || True  = True
 False || False = False
 
+cond :: Bool -> a -> a -> a
+cond True ifTrue _ = ifTrue
+cond False _ ifFalse = ifFalse
+
+not :: Bool -> Bool
+not = cond False True
+
+and :: Bool -> Bool -> Bool
+a `and` b = cond a (cond b True False) False
+
+or :: Bool -> Bool -> Bool
+a `or` b = cond a True (cond b True False)
+
 
 type BoolL = forall a. a -> a -> a
 
@@ -39,13 +52,13 @@ condL :: BoolL -> a -> a -> a
 condL p = p
 
 notL :: BoolL -> BoolL
-notL p = p falseL trueL
+notL p = condL p falseL trueL
 
 andL :: BoolL -> BoolL -> BoolL
-andL a b = condL a (condL b trueL falseL) falseL
+a `andL` b = condL a (condL b trueL falseL) falseL
 
 orL :: BoolL -> BoolL -> BoolL
-orL a b = condL a trueL (condL b trueL falseL)
+a `orL` b = condL a trueL (condL b trueL falseL)
 
 
 boolToL :: Bool -> BoolL
@@ -56,21 +69,35 @@ lToBool :: BoolL -> Bool
 lToBool p = condL p True False
 
 
-test expected =  print . (expected ==) . lToBool
+test expected =  print . (expected ==)
+testL expected =  test expected . lToBool
 
 
 main :: IO ()
 main = do
 
-    test False $ notL trueL
-    test True  $ notL falseL
+    test False $ not True
+    test True  $ not False
 
-    test True  $ andL trueL  trueL
-    test False $ andL trueL  falseL
-    test False $ andL falseL trueL
-    test False $ andL falseL falseL
+    test True  $ True  `and` True
+    test False $ True  `and` False
+    test False $ False `and` True
+    test False $ False `and` False
 
-    test True  $ orL trueL  trueL
-    test True  $ orL trueL  falseL
-    test True  $ orL falseL trueL
-    test False $ orL falseL falseL
+    test True  $ True  `or` True
+    test True  $ True  `or` False
+    test True  $ False `or` True
+    test False $ False `or` False
+
+    testL False $ notL trueL
+    testL True  $ notL falseL
+
+    testL True  $ trueL  `andL` trueL
+    testL False $ trueL  `andL` falseL
+    testL False $ falseL `andL` trueL
+    testL False $ falseL `andL` falseL
+
+    testL True  $ trueL  `orL` trueL
+    testL True  $ trueL  `orL` falseL
+    testL True  $ falseL `orL` trueL
+    testL False $ falseL `orL` falseL
