@@ -1,0 +1,62 @@
+#!/bin/sh
+':' //; exec "$(command -v nodejs || command -v node)" "$0" "$@"
+
+
+var boolH = cond_fn => ({ cond: cond_fn })
+
+var trueH = boolH((a, b) => a)
+var falseH = boolH((a, b) => b)
+
+var notH = b => b.cond(falseH, trueH)
+var andH = (a, b) => a.cond(b.cond(trueH, falseH), falseH)
+var orH = (a, b) => a.cond(trueH, b.cond(trueH, falseH))
+
+var notH2 = b =>
+    boolH( (t, f) =>
+        b.cond(falseH.cond(t, f), trueH.cond(t, f)))
+
+var andH2 = (a, b) => 
+    boolH( (t, f) =>
+        a.cond(
+            b.cond(trueH.cond(t, f), falseH.cond(t, f)),
+            falseH.cond(t, f)))
+
+var orH2 = (a, b) => 
+    boolH( (t, f) =>
+        a.cond(
+            trueH.cond(t, f),
+            b.cond(trueH.cond(t, f), falseH.cond(t, f))))
+
+var hToBool = a => a.cond(true, false)
+var boolToH = b => b ? trueH : falseH
+
+
+function test(expected, expr) {
+    console.log(expected === hToBool(expr))
+}
+
+test(false, notH(trueH ))
+test(true , notH(falseH))
+
+test(true , andH(trueH , trueH ))
+test(false, andH(falseH, trueH ))
+test(false, andH(trueH , falseH))
+test(false, andH(falseH, falseH))
+
+test(true , orH(trueH , trueH ))
+test(true , orH(falseH, trueH ))
+test(true , orH(trueH , falseH))
+test(false, orH(falseH, falseH))
+
+test(false, notH2(trueH ))
+test(true , notH2(falseH))
+
+test(true , andH2(trueH , trueH ))
+test(false, andH2(falseH, trueH ))
+test(false, andH2(trueH , falseH))
+test(false, andH2(falseH, falseH))
+
+test(true , orH2(trueH , trueH ))
+test(true , orH2(falseH, trueH ))
+test(true , orH2(trueH , falseH))
+test(false, orH2(falseH, falseH))
