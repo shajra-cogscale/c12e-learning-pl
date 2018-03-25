@@ -3,7 +3,7 @@
 
 def boolH(cond_fn):
     self = {}
-    self["cond"] = cond_fn 
+    self["cond"] = cond_fn
     self["not"] = lambda: self["cond"](falseH(), trueH())
     self["and"] = lambda b: self["cond"](b["cond"](trueH(), falseH()), falseH())
     self["or"] = lambda b: self["cond"](trueH(), b["cond"](trueH(), falseH()))

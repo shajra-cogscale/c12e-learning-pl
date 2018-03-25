@@ -61,7 +61,7 @@ console.log(
 
 console.log(!contains(1, remove(1, singleton(1))))
 
-console.log( 
+console.log(
     function (s) { return contains(1, s) && !contains(2, s) }
     (remove(2, singleton(1))))
 

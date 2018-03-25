@@ -3,7 +3,7 @@
 
 def boolH(cond_fn):
     return {
-        "cond": cond_fn 
+        "cond": cond_fn
     }
 
 trueH = boolH(lambda t, f: t)

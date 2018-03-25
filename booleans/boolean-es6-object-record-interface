@@ -15,13 +15,13 @@ var notH2 = b =>
     boolH( (t, f) =>
         b.cond(falseH.cond(t, f), trueH.cond(t, f)))
 
-var andH2 = (a, b) => 
+var andH2 = (a, b) =>
     boolH( (t, f) =>
         a.cond(
             b.cond(trueH.cond(t, f), falseH.cond(t, f)),
             falseH.cond(t, f)))
 
-var orH2 = (a, b) => 
+var orH2 = (a, b) =>
     boolH( (t, f) =>
         a.cond(
             trueH.cond(t, f),
